@@ -24,7 +24,7 @@ src/UI/                   Streamlit application
 requirements.txt          Python dependencies
 ```
 
-The clinical dataset is not included. The ingestion script expects an authorized local file at `data/MIMIC_IV_Trasncript.csv`.
+The synthetic clinical dataset is not included in this repository. Download it from its Kaggle dataset page after reviewing the dataset's license and terms. Keep the downloaded file local; the `data/` directory is intentionally ignored by Git.
 
 ## Prerequisites
 
@@ -118,9 +118,54 @@ On Windows PowerShell:
 uv pip install -r requirements.txt
 ```
 
-## 4. Load and Prepare the Data
+## 4. Download and Prepare the Data
 
-Place the authorized dataset at `data/MIMIC_IV_Trasncript.csv`, then run the pipeline in order:
+Obtain the synthetic dataset from Kaggle. You can download it from the dataset page in your browser, or use the Kaggle CLI.
+
+### Option A: Kaggle Website
+
+1. Open the Kaggle dataset page and sign in.
+2. Review its license and usage terms, then download the dataset archive.
+3. Extract the CSV file into the repository's `data/` directory. Create that directory if it does not exist.
+4. Rename the CSV to exactly `MIMIC_IV_Trasncript.csv` so the ingestion script can find it.
+
+The expected local path is:
+
+```text
+data/MIMIC_IV_Trasncript.csv
+```
+
+### Option B: Kaggle CLI
+
+Install the Kaggle CLI in your Python environment and authenticate using Kaggle's current instructions. Keep the API token outside this repository; never place it in `.env`, source control, or a shared image.
+
+Replace `OWNER/DATASET-SLUG` below with the dataset identifier shown on its Kaggle page:
+
+```bash
+python -m pip install kaggle
+mkdir -p data
+kaggle datasets download -d OWNER/DATASET-SLUG -p data --unzip
+```
+
+If the archive contains a CSV with another name, rename it to the expected filename:
+
+```bash
+mv data/ACTUAL_DATASET_FILENAME.csv data/MIMIC_IV_Trasncript.csv
+```
+
+On Windows PowerShell, use:
+
+```powershell
+New-Item -ItemType Directory -Force data
+kaggle datasets download -d OWNER/DATASET-SLUG -p data --unzip
+Rename-Item data\ACTUAL_DATASET_FILENAME.csv MIMIC_IV_Trasncript.csv
+```
+
+Replace the sample owner, dataset slug, and actual filename with the values from Kaggle. Do not upload the downloaded dataset to this public repository.
+
+### Run the Ingestion Pipeline
+
+After the CSV is in place and PostgreSQL is configured, run the pipeline from the repository root in order:
 
 ```bash
 python scripts/01_ingest_baseline_data.py
